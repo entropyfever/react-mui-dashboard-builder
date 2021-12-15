@@ -1,7 +1,7 @@
 {
   "name": "react-mui-dashboard-builder",
   "license": "MIT",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "private": false,
   "description": "A dashboard builder built on top of react and mui's grid system",
   "author": "Christos Miamis (aka: entropyfever)",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/entropyfever/react-mui-dashboard-builder.git"
+    "url": "git@github.com:entropyfever/react-mui-dashboard-builder.git"
   },
   "scripts": {
     "build": "yarn clean; rollup -c",
