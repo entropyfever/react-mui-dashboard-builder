@@ -34,7 +34,16 @@
   "module": "index.esm.js",
   "types": "index.d.ts",
   "dependencies": {
-    "classnames": "^2.2.6"
+    "@dnd-kit/accessibility": "3.0.0",
+    "@dnd-kit/core": "4.0.0",
+    "@dnd-kit/modifiers": "4.0.0",
+    "@dnd-kit/sortable": "5.0.0",
+    "@dnd-kit/utilities": "3.0.0",
+    "@mui/icons-material": "5.0.3",
+    "@mui/material": "5.0.3",
+    "@mui/system": "5.0.3",
+    "classnames": "^2.2.6",
+    "uuid": "3.4.0"
   },
   "peerDependencies": {
     "react": "^17.0.2",
