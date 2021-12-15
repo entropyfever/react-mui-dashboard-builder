@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.0.0...v1.1.0) (2021-12-15)
+
+
+### Features
+
+* add dashboard-builder-client ([c6085c1](https://github.com/entropyfever/react-mui-dashboard-builder/commit/c6085c157725fb2f023a68b42589cf85f0e28111))
+
 ## 1.0.0 (2021-12-15)
 
 
