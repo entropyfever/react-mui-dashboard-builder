@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.1.1](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.1.0...v1.1.1) (2021-12-15)
+
+
+### Bug Fixes
+
+* export some new stuff ([ad66725](https://github.com/entropyfever/react-mui-dashboard-builder/commit/ad66725130bd47819047a7aae50c14d849115d19))
+
 ## [1.1.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.0.0...v1.1.0) (2021-12-15)
 
 
