@@ -1,17 +1,17 @@
 {
-  "name": "sixfootsixdesigns-react-library-boilerplate",
+  "name": "react-mui-dashboard-builder",
   "license": "MIT",
   "version": "0.0.0",
   "private": false,
-  "description": "React Typescript Library Boilerplate",
-  "author": "James Olson",
-  "homepage": "https://github.com/sixfootsixdesigns/React-Library-Boilerplate",
+  "description": "A dashboard builder built on top of react and mui's grid system",
+  "author": "Christos Miamis (aka: entropyfever)",
+  "homepage": "https://github.com/entropyfever/react-mui-dashboard-builder",
   "bugs": {
-    "url": "https://github.com/sixfootsixdesigns/React-Library-Boilerplate/issues"
+    "url": "https://github.com/entropyfever/react-mui-dashboard-builder/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sixfootsixdesigns/React-Library-Boilerplate.git"
+    "url": "git+https://github.com/entropyfever/react-mui-dashboard-builder.git"
   },
   "scripts": {
     "build": "yarn clean; rollup -c",
@@ -37,8 +37,8 @@
     "classnames": "^2.2.6"
   },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.7",
