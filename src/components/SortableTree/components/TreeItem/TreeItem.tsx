@@ -1,7 +1,7 @@
 import React, { forwardRef, HTMLAttributes } from 'react';
 import classNames from 'classnames';
 
-import styles from './TreeItem.module.scss';
+import './TreeItem.scss';
 import { Handle, Action, Remove } from '../Item/components';
 import { ActionProps } from '../Item/components/Action';
 
@@ -53,12 +53,12 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
     return (
       <li
         className={ classNames(
-          styles.Wrapper,
-          clone && styles.clone,
-          ghost && styles.ghost,
-          indicator && styles.indicator,
-          disableSelection && styles.disableSelection,
-          disableInteraction && styles.disableInteraction,
+          'Wrapper',
+          clone && 'clone',
+          ghost && 'ghost',
+          indicator && 'indicator',
+          disableSelection && 'disableSelection',
+          disableInteraction && 'disableInteraction',
         ) }
         ref={ wrapperRef }
         style={
@@ -68,23 +68,23 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
         }
         { ...props }
       >
-        <div className={ styles.TreeItem } ref={ ref } style={ style }>
+        <div className={ 'TreeItem' } ref={ ref } style={ style }>
           <Handle { ...handleProps } />
           {onCollapse && (
             <Action
               onClick={ onCollapse }
               className={ classNames(
-                styles.Collapse,
-                collapsed && styles.collapsed,
+                'Collapse',
+                collapsed && 'collapsed',
               ) }
             >
               {collapseIcon}
             </Action>
           )}
-          <span className={ styles.Text }>{value}</span>
+          <span className={ 'Text' }>{value}</span>
           {!clone && onRemove && <Remove onClick={ onRemove } />}
           {clone && childCount && 1 < childCount ? (
-            <span className={ styles.Count }>{childCount}</span>
+            <span className={ 'Count' }>{childCount}</span>
           ) : null}
         </div>
       </li>

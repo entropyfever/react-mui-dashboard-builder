@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import classNames from 'classnames';
 
-import styles from './Action.module.scss';
+import './Action.scss';
 
 export interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   active?: {
@@ -15,7 +15,7 @@ export const Action: React.FunctionComponent<Props> = function ({ active, classN
   return (
     <button
       { ...props }
-      className={ classNames(styles.Action, className) }
+      className={ classNames('Action', className) }
       tabIndex={ 0 }
       style={
         {

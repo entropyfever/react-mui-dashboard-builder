@@ -5,7 +5,7 @@ import type { Transform } from '@dnd-kit/utilities';
 
 import { Handle, Remove } from './components';
 
-import styles from './Item.module.scss';
+import './Item.scss';
 
 export interface Props {
   dragOverlay?: boolean;
@@ -93,10 +93,10 @@ export const Item = React.memo(
       ) : (
         <li
           className={ classNames(
-            styles.Wrapper,
-            fadeIn && styles.fadeIn,
-            sorting && styles.sorting,
-            dragOverlay && styles.dragOverlay,
+            'Wrapper',
+            fadeIn && 'fadeIn',
+            sorting && 'sorting',
+            dragOverlay && 'dragOverlay',
           ) }
           style={
             {
@@ -122,12 +122,12 @@ export const Item = React.memo(
         >
           <div
             className={ classNames(
-              styles.Item,
-              dragging && styles.dragging,
-              handle && styles.withHandle,
-              dragOverlay && styles.dragOverlay,
-              disabled && styles.disabled,
-              color && styles.color,
+              'Item',
+              dragging && 'dragging',
+              handle && 'withHandle',
+              dragOverlay && 'dragOverlay',
+              disabled && 'disabled',
+              color && 'color',
             ) }
             style={ style }
             data-cypress='draggable-item'
@@ -136,9 +136,9 @@ export const Item = React.memo(
             tabIndex={ !handle ? 0 : undefined }
           >
             {value}
-            <span className={ styles.Actions }>
+            <span className={ 'Actions' }>
               {onRemove ? (
-                <Remove className={ styles.Remove } onClick={ onRemove } />
+                <Remove className={ 'Remove' } onClick={ onRemove } />
               ) : null}
               {handle ? <Handle { ...listeners } /> : null}
             </span>
