@@ -34,6 +34,7 @@ module.exports = {
     '@typescript-eslint/no-object-literal-type-assertion': rules.OFF,
     'react/no-deprecated': rules.OFF,
     'react/prop-types': rules.OFF,
+    "consistent-this": [rules.ON, "that"],
     'react-hooks/rules-of-hooks': rules.ON,
     'react-hooks/exhaustive-deps': rules.WARN,
     'prefer-spread': rules.WARN,

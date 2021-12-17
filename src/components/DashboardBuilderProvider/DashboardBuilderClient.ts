@@ -1,14 +1,8 @@
-import {v4 as uuid} from 'uuid';
+import {TreeClient} from "./TreeClient";
 
-export class DashboardBuilderClient {
-
-	private readonly _clientId: string;
+export class DashboardBuilderClient extends TreeClient {
 
 	constructor() {
-		this._clientId = uuid();
-	}
-
-	get clientId(): string {
-		return this._clientId;
+		super();
 	}
 }

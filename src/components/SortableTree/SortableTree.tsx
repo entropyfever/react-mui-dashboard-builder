@@ -33,16 +33,16 @@ import {
 
 import {
   buildTree,
-  flattenTree,
   getProjection,
-  getChildCount,
-  removeItem,
   removeChildrenOf,
-  setProperty,
 } from './utilities';
 import type { FlattenedItem, SensorContext, TreeItems } from './types';
 import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 import { TreeItem, SortableTreeItem } from './components';
+import {
+  useDashboardBuilderClient,
+  useTree
+} from "../DashboardBuilderProvider";
 
 const adjustTranslate: Modifier = ({ transform }) => {
   return {
@@ -51,32 +51,6 @@ const adjustTranslate: Modifier = ({ transform }) => {
   };
 };
 
-const initialItems: TreeItems = [
-  {
-    id: 'Home',
-    children: [],
-  },
-  {
-    id: 'Collections',
-    children: [
-      { id: 'Spring', children: [] },
-      { id: 'Summer', children: [] },
-      { id: 'Fall', children: [] },
-      { id: 'Winter', children: [] },
-    ],
-  },
-  {
-    id: 'About Us',
-    children: [],
-  },
-  {
-    id: 'My Account',
-    children: [
-      { id: 'Addresses', children: [] },
-      { id: 'Order History', children: [] },
-    ],
-  },
-];
 
 const measuring = {
   droppable: {
@@ -110,13 +84,15 @@ type PropsWithDefaults = Props & DefaultProps;
 export const SortableTree: React.FunctionComponent<Props> = function (props) {
   const {
     collapsible,
-    defaultItems,
     indicator,
     indentationWidth,
     removable,
   } = props as PropsWithDefaults;
 
-  const [ items, setItems ] = useState(() => { return defaultItems; });
+  const client = useDashboardBuilderClient();
+
+  const [root, setRoot] = useTree();
+
   const [ activeId, setActiveId ] = useState<string | null>(null);
   const [ overId, setOverId ] = useState<string | null>(null);
   const [ offsetLeft, setOffsetLeft ] = useState(0);
@@ -126,7 +102,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
   } | null>(null);
 
   const flattenedItems = useMemo(() => {
-    const flattenedTree = flattenTree(items);
+    const flattenedTree = client.flattenTree();
     const collapsedItems = flattenedTree.reduce<string[]>(
       (acc, { children, collapsed, id }) => { return (collapsed && children.length ? [ ...acc, id ] : acc); },
       [],
@@ -136,7 +112,8 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
       flattenedTree,
       activeId ? [ activeId, ...collapsedItems ] : collapsedItems,
     );
-  }, [ activeId, items ]);
+  }, [ activeId, root ]);
+
   const projected = activeId && overId
     ? getProjection(
       flattenedItems,
@@ -211,7 +188,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
     if (projected && over) {
       const { depth, parentId } = projected;
       const clonedItems: FlattenedItem[] = JSON.parse(
-        JSON.stringify(flattenTree(items)),
+        JSON.stringify(client.flattenTree()),
       );
       const overIndex = clonedItems.findIndex(({ id }) => { return id === over.id; });
       const activeIndex = clonedItems.findIndex(({ id }) => { return id === active.id; });
@@ -220,25 +197,23 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
       clonedItems[activeIndex] = { ...activeTreeItem, depth, parentId };
 
       const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
-      const newItems = buildTree(sortedItems);
+      const newRoot = buildTree(sortedItems);
 
-      setItems(newItems);
+      setRoot(newRoot);
     }
-  }, [ resetState, projected, items, setItems ]);
+  }, [ resetState, projected, root, setRoot ]);
 
   const handleDragCancel = useCallback(() => {
     resetState();
   }, [ resetState ]);
 
   function handleRemove(id: string): void {
-    setItems((prevItems) => { return removeItem(prevItems, id); });
+    client.removeItem(id);
   }
 
   function handleCollapse(id: string): void {
-    setItems((prevItems) => {
-      return setProperty(prevItems, id, 'collapsed', (value) => {
-        return !value;
-      });
+    client.setItemProperty(id, "collapsed", (value) => {
+      return !value;
     });
   }
 
@@ -266,7 +241,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
     }
 
     const clonedItems: FlattenedItem[] = JSON.parse(
-      JSON.stringify(flattenTree(items)),
+      JSON.stringify(client.flattenTree()),
     );
     const overIndex = clonedItems.findIndex(({ id }) => { return id === overId; });
     const activeIndex = clonedItems.findIndex(({ id }) => { return id === activeMovementId; });
@@ -355,7 +330,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
               <TreeItem
                 depth={ activeItem.depth }
                 clone
-                childCount={ getChildCount(items, activeId) + 1 }
+                childCount={ client.getChildCountOfItem(activeId) + 1 }
                 value={ activeId }
                 indentationWidth={ indentationWidth }
               />
@@ -372,7 +347,6 @@ SortableTree.defaultProps = {
   collapsible: true,
   indicator: true,
   removable: true,
-  defaultItems: initialItems,
   indentationWidth: 50,
 };
 

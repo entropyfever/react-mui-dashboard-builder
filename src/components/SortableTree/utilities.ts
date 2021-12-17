@@ -8,7 +8,12 @@ function getDragDepth(offset: number, indentationWidth: number): number {
   return Math.round(offset / indentationWidth);
 }
 
-function getMaxDepth({ previousItem }: {previousItem: FlattenedItem}): number {
+interface IItemDepth {
+  (item: FlattenedItem): number
+}
+
+
+const getMaxDepth: IItemDepth = function (previousItem) {
   if (previousItem) {
     return previousItem.depth + 1;
   }
@@ -16,7 +21,7 @@ function getMaxDepth({ previousItem }: {previousItem: FlattenedItem}): number {
   return 0;
 }
 
-function getMinDepth({ nextItem }: {nextItem: FlattenedItem}): number {
+const getMinDepth: IItemDepth = function (nextItem): number {
   if (nextItem) {
     return nextItem.depth;
   }
@@ -45,10 +50,8 @@ export function getProjection(
   const nextItem = newItems[overItemIndex + 1];
   const dragDepth = getDragDepth(dragOffset, indentationWidth);
   const projectedDepth = activeItem.depth + dragDepth;
-  const maxDepth = getMaxDepth({
-    previousItem,
-  });
-  const minDepth = getMinDepth({ nextItem });
+  const maxDepth = getMaxDepth(previousItem);
+  const minDepth = getMinDepth(nextItem);
   let depth = projectedDepth;
 
   if (projectedDepth >= maxDepth) {
@@ -80,32 +83,40 @@ export function getProjection(
   return { depth, maxDepth, minDepth, parentId: getParentId() };
 }
 
-function flatten(
-  items: TreeItems,
+function flatten<T extends TreeItem = TreeItem>(
+  items: T[],
   parentId: string | null = null,
   depth = 0,
-): FlattenedItem[] {
-  return items.reduce<FlattenedItem[]>((acc, item, index) => {
+): (T & FlattenedItem)[] {
+
+
+  return items.reduce<(T & FlattenedItem)[]>((acc, item, index) => {
+
+    const flattenedItem = {...item, ...{parentId, index, depth}} as (T & FlattenedItem);
+
     return [
       ...acc,
-      { ...item, parentId, depth, index },
-      ...flatten(item.children, item.id, depth + 1),
+      flattenedItem,
+      ...flatten<T>(item.children, item.id, depth + 1),
     ];
+
   }, []);
 }
 
-export function flattenTree(items: TreeItems): FlattenedItem[] {
-  return flatten(items);
+export function flattenTree<T extends TreeItem = TreeItem>(items: T[]): (T & FlattenedItem)[]{
+  return flatten<T>(items);
 }
 
 export function findItem(items: TreeItem[], itemId: string): TreeItem | undefined {
   return items.find(({ id }) => { return id === itemId; });
 }
 
-export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
+export function buildTree(flattenedItems: FlattenedItem[]): TreeItem {
   const root: TreeItem = { id: 'root', children: [] };
   const nodes: Record<string, TreeItem> = { [root.id]: root };
-  const items = flattenedItems.map((item) => { return { ...item, children: [] }; });
+  const items = flattenedItems
+    .filter((item) => item.id !== 'root')
+    .map((item) => { return { ...item, children: [] }; });
 
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
@@ -117,13 +128,13 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     parent.children.push(item);
   }
 
-  return root.children;
+  return root;
 }
 
-export function findItemDeep(
-  items: TreeItems,
+export function findItemDeep<T extends TreeItem = TreeItem>(
+  items: T[],
   itemId: string,
-): TreeItem | undefined {
+): T | undefined {
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
     const { id, children } = item;
@@ -144,8 +155,8 @@ export function findItemDeep(
   return undefined;
 }
 
-export function removeItem(items: TreeItems, id: string): TreeItem[] {
-  const newItems: TreeItem[] = [];
+export function removeItem<T extends TreeItem = TreeItem>(items: T[], id: string): T[] {
+  const newItems: T[] = [];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
@@ -164,12 +175,14 @@ export function removeItem(items: TreeItems, id: string): TreeItem[] {
   return newItems;
 }
 
-export function setProperty<T extends keyof TreeItem>(
-  items: TreeItems,
+
+export function setProperty<T extends TreeItem = TreeItem, K extends keyof T = keyof TreeItem>(
+  items: T[],
   id: string,
-  property: T,
-  setter: (_value: TreeItem[T]) => TreeItem[T],
-): TreeItems {
+  property: K,
+  setter: ((_value: T[K]) => T[K]),
+): T[] {
+
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
     if (item.id === id) {
@@ -186,7 +199,7 @@ export function setProperty<T extends keyof TreeItem>(
   return [ ...items ];
 }
 
-function countChildren(items: TreeItem[], count = 0): number {
+function countChildren<T extends TreeItem = TreeItem>(items: T[], count = 0): number {
   return items.reduce((acc, { children }) => {
     if (children.length) {
       return countChildren(children, acc + 1);
@@ -196,14 +209,14 @@ function countChildren(items: TreeItem[], count = 0): number {
   }, count);
 }
 
-export function getChildCount(items: TreeItems, id: string): number {
+export function getChildCount<T extends TreeItem = TreeItem>(items: T[], id: string): number {
   if (!id) {
     return 0;
   }
 
-  const item = findItemDeep(items, id);
+  const item = findItemDeep<T>(items, id);
 
-  return item ? countChildren(item.children) : 0;
+  return item ? countChildren<T>(item.children) : 0;
 }
 
 export function removeChildrenOf(items: FlattenedItem[], ids: string[]): FlattenedItem[] {
