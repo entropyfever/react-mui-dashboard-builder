@@ -13,17 +13,20 @@ import {
 import {Subject} from "./Subject";
 
 
-export class TreeClient<T extends TreeItem = TreeItem> {
+export class TreeClient<T extends TreeItem> {
 
 	private readonly _clientId: string;
 	private _root: T | undefined;
 
-	private itemsSubject: Subject<T | undefined>;
+	private treeSubject: Subject<T | undefined>;
+	private nodesSubject: Map<string, Subject<T | undefined>>;
 
 	constructor() {
+
 		this._clientId = uuid();
 		this._root = undefined;
-		this.itemsSubject = new Subject();
+		this.treeSubject = new Subject();
+		this.nodesSubject = new Map();
 
 		const initialRootChildren: TreeItem[] = [
 			{
@@ -59,20 +62,61 @@ export class TreeClient<T extends TreeItem = TreeItem> {
 
 	}
 
-	public treeAttach(o: (args: T) => void): void{
-		this.itemsSubject.attach(o);
+	public treeAttach(o: (args: T | undefined) => void): void{
+		this.treeSubject.attach(o);
 	}
 
-	public treeDetach(o: (args: T) => void): void{
-		this.itemsSubject.detach(o);
+	public treeDetach(o: (args: T | undefined) => void): void{
+		this.treeSubject.detach(o);
 	}
 
 	public treeNotify(): void{
 		if (!this.root){
-			this.itemsSubject.notify(undefined);
+			this.treeSubject.notify(undefined);
+			Array.from(this.nodesSubject.keys()).map((nodeId) => {
+				this.nodeNotify(nodeId);
+			})
 			return;
 		}
-		this.itemsSubject.notify( { ...this.root});
+		this.treeSubject.notify( { ...this.root});
+		this.flattenTree().forEach((node) => {
+			this.nodeNotify(node.id);
+		})
+	}
+
+	public nodeAttach(nodeId: string, o: (args: T | undefined) => void): void{
+		if (!this.nodesSubject.has(nodeId)){
+			this.nodesSubject.set(nodeId, new Subject());
+		}
+		const nodeSubject = this.nodesSubject.get(nodeId);
+		if (!nodeSubject){
+			throw new Error('I just set you');
+		}
+		nodeSubject.attach(o);
+	}
+
+	public nodeDetach(nodeId: string, o: (args: T | undefined) => void): void{
+		const nodeSubject = this.nodesSubject.get(nodeId);
+		if (!nodeSubject){
+			throw new Error('Trying to detach from non existing subject');
+		}
+		nodeSubject.detach(o);
+		if (nodeSubject.isEmpty()){
+			this.nodesSubject.delete(nodeId);
+		}
+	}
+
+	public nodeNotify(nodeId: string): void{
+		const nodeSubject = this.nodesSubject.get(nodeId);
+		if (!nodeSubject){
+			return;
+		}
+		const newNode = this.findNodeDeep(nodeId);
+		if (!newNode){
+			nodeSubject.notify(undefined);
+			return;
+		}
+		nodeSubject.notify( { ...newNode});
 	}
 
 	get clientId(): string {
@@ -88,45 +132,42 @@ export class TreeClient<T extends TreeItem = TreeItem> {
 		this.treeNotify();
 	}
 
-	public findItemDeep(itemId: string): T | undefined {
+	public findNodeDeep(nodeId: string): T | undefined {
 		if (!this.root){
 			return undefined;
 		}
 
-		return findItemDeep<T>([this.root], itemId);
+		return findItemDeep([this.root], nodeId);
 	}
 
-	public removeItem(itemId: string): void {
+	public removeNode(nodeId: string): void {
 		if (!this.root){
 			return undefined;
 		}
-		[this.root] = removeItem<T>([this.root], itemId);
+		[this.root] = removeItem([this.root], nodeId);
 
 		this.treeNotify();
 	}
 
-	public setItemProperty<K extends keyof T>(itemId: string, property: K, setter: (_value: T[K]) => T[K]): void{
+	public setNodeProperty<K extends keyof T>(nodeId: string, property: K, setter: (_value: T[K]) => T[K]): void{
 		if (!this.root){
 			return undefined;
 		}
-		[this.root] = setProperty<T, K>([this.root], itemId, property, setter);
-
-		console.log(this.root);
-		this.treeNotify();
+		[this.root] = setProperty([ this.root ], nodeId, property, setter);
 	}
 
-	public getChildCountOfItem(itemId: string): number{
+	public getChildCountOfNode(nodeId: string): number{
 		if (!this.root){
 			return 0;
 		}
-		return getChildCount<T>([this.root], itemId);
+		return getChildCount([this.root], nodeId);
 	}
 
 	public flattenTree(): (T & FlattenedItem)[]{
 		if (!this.root){
 			return [];
 		}
-		return flattenTree<T>([this.root]);
+		return flattenTree([this.root]);
 	}
 
 

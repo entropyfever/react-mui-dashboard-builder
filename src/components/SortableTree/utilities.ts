@@ -1,6 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable';
 
-import type { FlattenedItem, TreeItem, TreeItems } from './types';
+import type { FlattenedItem, TreeItem } from './types';
 
 export const iOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
@@ -83,7 +83,7 @@ export function getProjection(
   return { depth, maxDepth, minDepth, parentId: getParentId() };
 }
 
-function flatten<T extends TreeItem = TreeItem>(
+function flatten<T extends TreeItem>(
   items: T[],
   parentId: string | null = null,
   depth = 0,
@@ -97,14 +97,14 @@ function flatten<T extends TreeItem = TreeItem>(
     return [
       ...acc,
       flattenedItem,
-      ...flatten<T>(item.children, item.id, depth + 1),
+      ...flatten(item.children, item.id, depth + 1),
     ];
 
   }, []);
 }
 
-export function flattenTree<T extends TreeItem = TreeItem>(items: T[]): (T & FlattenedItem)[]{
-  return flatten<T>(items);
+export function flattenTree<T extends TreeItem>(items: T[]): (T & FlattenedItem)[]{
+  return flatten(items);
 }
 
 export function findItem(items: TreeItem[], itemId: string): TreeItem | undefined {
@@ -131,7 +131,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItem {
   return root;
 }
 
-export function findItemDeep<T extends TreeItem = TreeItem>(
+export function findItemDeep<T extends TreeItem>(
   items: T[],
   itemId: string,
 ): T | undefined {
@@ -155,7 +155,7 @@ export function findItemDeep<T extends TreeItem = TreeItem>(
   return undefined;
 }
 
-export function removeItem<T extends TreeItem = TreeItem>(items: T[], id: string): T[] {
+export function removeItem<T extends TreeItem>(items: T[], id: string): T[] {
   const newItems: T[] = [];
 
   // eslint-disable-next-line no-restricted-syntax
@@ -176,7 +176,7 @@ export function removeItem<T extends TreeItem = TreeItem>(items: T[], id: string
 }
 
 
-export function setProperty<T extends TreeItem = TreeItem, K extends keyof T = keyof TreeItem>(
+export function setProperty<T extends TreeItem, K extends keyof T>(
   items: T[],
   id: string,
   property: K,
@@ -199,7 +199,17 @@ export function setProperty<T extends TreeItem = TreeItem, K extends keyof T = k
   return [ ...items ];
 }
 
-function countChildren<T extends TreeItem = TreeItem>(items: T[], count = 0): number {
+
+interface TestTreeItem extends TreeItem {
+  test: string
+}
+
+const x: TestTreeItem[] = []
+setProperty(x, 'id', 'test', (x) => x)
+
+
+
+function countChildren<T extends TreeItem>(items: T[], count = 0): number {
   return items.reduce((acc, { children }) => {
     if (children.length) {
       return countChildren(children, acc + 1);
@@ -209,14 +219,14 @@ function countChildren<T extends TreeItem = TreeItem>(items: T[], count = 0): nu
   }, count);
 }
 
-export function getChildCount<T extends TreeItem = TreeItem>(items: T[], id: string): number {
+export function getChildCount<T extends TreeItem>(items: T[], id: string): number {
   if (!id) {
     return 0;
   }
 
-  const item = findItemDeep<T>(items, id);
+  const item = findItemDeep(items, id);
 
-  return item ? countChildren<T>(item.children) : 0;
+  return item ? countChildren(item.children) : 0;
 }
 
 export function removeChildrenOf(items: FlattenedItem[], ids: string[]): FlattenedItem[] {

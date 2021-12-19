@@ -1,6 +1,9 @@
 const path = require('path');
 
 module.exports = {
+  typescript: {
+    reactDocgen: 'none', // temporary solution for TypeError: (tag.text || "").trim is not a function
+  },
   stories: ['../src/**/*.stories.tsx'],
   webpackFinal: async (config, { configType }) => {
    // add scss support

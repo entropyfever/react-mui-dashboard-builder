@@ -208,11 +208,11 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
   }, [ resetState ]);
 
   function handleRemove(id: string): void {
-    client.removeItem(id);
+    client.removeNode(id);
   }
 
   function handleCollapse(id: string): void {
-    client.setItemProperty(id, "collapsed", (value) => {
+    client.setNodeProperty(id, "collapsed", (value) => {
       return !value;
     });
   }
@@ -330,7 +330,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
               <TreeItem
                 depth={ activeItem.depth }
                 clone
-                childCount={ client.getChildCountOfItem(activeId) + 1 }
+                childCount={ client.getChildCountOfNode(activeId) + 1 }
                 value={ activeId }
                 indentationWidth={ indentationWidth }
               />

@@ -1,12 +1,12 @@
 import type { MutableRefObject } from 'react';
 
-export interface TreeItem {
+export interface TreeItem{
   id: string;
   children: this[];
   collapsed?: boolean;
 }
 
-const createTreeItem = <T extends TreeItem>(): TreeItem => {
+export const createTreeItem = <T extends TreeItem>(): TreeItem => {
   return {
     id: 'root',
     children: []

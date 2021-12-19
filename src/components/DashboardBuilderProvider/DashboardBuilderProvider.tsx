@@ -1,59 +1,53 @@
 import React, {
 	createContext,
+	useCallback,
 	useContext,
 	useEffect,
 	useRef,
 	useState,
 } from 'react';
+import { once } from 'lodash';
 import {DashboardBuilderClient} from "./DashboardBuilderClient";
 import {TreeItem} from "../SortableTree/types";
 
-interface IDashboardBuilderContext {
-	dashboardBuilderClient: DashboardBuilderClient
+
+interface IDashboardBuilderContext<T extends TreeItem> {
+	dashboardBuilderClient: DashboardBuilderClient<T>
 }
 
-const initialDashboardBuilderClient = new DashboardBuilderClient();
+const createDashboardBuilderContext = once(<T extends TreeItem,>() => {
+	const dashboardBuilderClient = new DashboardBuilderClient<T>();
+	return createContext<IDashboardBuilderContext<T>>({ dashboardBuilderClient })
+});
+
+export const useDashboardBuilderClient = <T extends TreeItem,>(): DashboardBuilderClient<T> => useContext(createDashboardBuilderContext<T>()).dashboardBuilderClient;
 
 
-const DashboardBuilderContext = createContext<IDashboardBuilderContext>(
-	{
-		dashboardBuilderClient: initialDashboardBuilderClient
-	}
-);
-
-
-export interface DashboardBuilderProviderProps {
-	client: DashboardBuilderClient
+export interface DashboardBuilderProviderProps<T extends TreeItem> {
+	client: DashboardBuilderClient<T>
 	children: React.ReactNode
 }
 
-export const DashboardBuilderProvider: React.FunctionComponent<DashboardBuilderProviderProps> = function (
-	{
+export const DashboardBuilderProvider = function <T extends TreeItem>(props: DashboardBuilderProviderProps<T>): JSX.Element {
+	const DashboardBuilderContext = createDashboardBuilderContext<T>();
+	const {
 		client,
-		children,
-	}) {
+		children
+	} = props;
 
-	const dashboardBuilderClient = useRef<DashboardBuilderClient>(client);
+	const dashboardBuilderClient = useRef<DashboardBuilderClient<T>>(client);
 
 	return (
 		<DashboardBuilderContext.Provider value={{dashboardBuilderClient: dashboardBuilderClient.current}}>
 			{children}
 		</DashboardBuilderContext.Provider>
 	);
-};
-
-export const useDashboardBuilderClient = (): DashboardBuilderClient => {
-  const {
-    dashboardBuilderClient
-  } = useContext(DashboardBuilderContext);
-
-  return dashboardBuilderClient;
 }
 
-export const useTree = (): [TreeItem | undefined, (args: TreeItem | undefined) => void] => {
-	const {
-		dashboardBuilderClient
-	} = useContext(DashboardBuilderContext);
+
+export const useTree = function <T extends TreeItem>(): [T | undefined, (args: T | undefined) => void] {
+
+	const dashboardBuilderClient = useDashboardBuilderClient<T>();
 
 	const [root, setRoot] = useState(dashboardBuilderClient.root);
 
@@ -74,4 +68,49 @@ export const useTree = (): [TreeItem | undefined, (args: TreeItem | undefined) =
 	}
 	return [root, handleSetRoot];
 }
+
+interface IPropertySetter<T> {
+	<K extends keyof T>(property: K, setter: (value: T[K]) => T[K]): void
+}
+
+export const useNode = function <T extends TreeItem>(nodeId: string | undefined): [T | undefined, <K extends keyof T>(property: K, setter: (value: T[K]) => T[K]) => void] {
+
+	const dashboardBuilderClient = useDashboardBuilderClient<T>();
+
+	const initialNode = !nodeId ? undefined : dashboardBuilderClient.findNodeDeep(nodeId);
+
+	const [node, setNode] = useState(initialNode as T | undefined);
+
+	const onNodeChanged = (newNode) => {
+		setNode(newNode)
+	}
+
+	useEffect(() => {
+		if (!nodeId){
+			return ;
+		}
+
+		dashboardBuilderClient.nodeAttach(nodeId, onNodeChanged);
+
+		return () => {
+			dashboardBuilderClient.nodeDetach(nodeId, onNodeChanged);
+		}
+	}, [nodeId, dashboardBuilderClient]);
+
+
+
+	const updateNodeProperty = useCallback<IPropertySetter<T>>(
+		( property, setter) => {
+		if (!nodeId){
+			return;
+		}
+		dashboardBuilderClient.setNodeProperty(nodeId, property, setter);
+
+	}, [nodeId, dashboardBuilderClient] );
+
+	return [node, updateNodeProperty];
+}
+
+
+
 

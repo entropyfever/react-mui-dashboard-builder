@@ -7,6 +7,10 @@ export class Subject<T> {
 		this.observers = [];
 	}
 
+	public isEmpty(){
+		return this.observers.length === 0;
+	}
+
 	public attach(observer: (args: T) => void): void{
 		this.observers.push(observer);
 	}
