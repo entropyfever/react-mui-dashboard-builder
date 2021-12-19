@@ -18,7 +18,7 @@ const getMaxDepth: IItemDepth = function (previousItem) {
     return previousItem.depth + 1;
   }
 
-  return 0;
+  return 1; // because root is omitted else 0
 }
 
 const getMinDepth: IItemDepth = function (nextItem): number {
@@ -26,7 +26,7 @@ const getMinDepth: IItemDepth = function (nextItem): number {
     return nextItem.depth;
   }
 
-  return 0;
+  return 1; // because root is omitted else 0
 }
 
 type Projection = {
@@ -111,8 +111,8 @@ export function findItem(items: TreeItem[], itemId: string): TreeItem | undefine
   return items.find(({ id }) => { return id === itemId; });
 }
 
-export function buildTree(flattenedItems: FlattenedItem[]): TreeItem {
-  const root: TreeItem = { id: 'root', children: [] };
+export function buildTree<T extends FlattenedItem>(flattenedItems: T[]): T {
+  const root: T = { id: 'root', children: [] };
   const nodes: Record<string, TreeItem> = { [root.id]: root };
   const items = flattenedItems
     .filter((item) => item.id !== 'root')
@@ -125,7 +125,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItem {
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
     nodes[id] = { id, children };
-    parent.children.push(item);
+    parent.children.push({ ...item, index: parent.children.length});
   }
 
   return root;

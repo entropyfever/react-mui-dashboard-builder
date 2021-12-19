@@ -11,6 +11,7 @@ import {
 	setProperty
 } from "../SortableTree/utilities";
 import {Subject} from "./Subject";
+import _ from "lodash";
 
 
 export class TreeClient<T extends TreeItem> {
@@ -78,7 +79,8 @@ export class TreeClient<T extends TreeItem> {
 			})
 			return;
 		}
-		this.treeSubject.notify( { ...this.root});
+		this.treeSubject.notify( _.cloneDeep(this.root));
+
 		this.flattenTree().forEach((node) => {
 			this.nodeNotify(node.id);
 		})
@@ -112,11 +114,12 @@ export class TreeClient<T extends TreeItem> {
 			return;
 		}
 		const newNode = this.findNodeDeep(nodeId);
+
 		if (!newNode){
 			nodeSubject.notify(undefined);
 			return;
 		}
-		nodeSubject.notify( { ...newNode});
+		nodeSubject.notify( _.cloneDeep(newNode));
 	}
 
 	get clientId(): string {

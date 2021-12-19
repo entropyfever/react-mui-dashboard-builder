@@ -6,7 +6,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import { once } from 'lodash';
+import _, { once } from 'lodash';
 import {DashboardBuilderClient} from "./DashboardBuilderClient";
 import {TreeItem} from "../SortableTree/types";
 
@@ -64,7 +64,8 @@ export const useTree = function <T extends TreeItem>(): [T | undefined, (args: T
 	}, [dashboardBuilderClient]);
 
 	const handleSetRoot = (newRoot) => {
-		dashboardBuilderClient.root = { ...newRoot};
+
+		dashboardBuilderClient.root = _.cloneDeep(newRoot);
 	}
 	return [root, handleSetRoot];
 }
@@ -81,17 +82,20 @@ export const useNode = function <T extends TreeItem>(nodeId: string | undefined)
 
 	const [node, setNode] = useState(initialNode as T | undefined);
 
-	const onNodeChanged = (newNode) => {
+	useEffect(() => {
+		const newNode = !nodeId ? undefined : dashboardBuilderClient.findNodeDeep(nodeId);
+		setNode(newNode);
+	}, [nodeId])
+
+	const onNodeChanged = useCallback((newNode) => {
 		setNode(newNode)
-	}
+	}, [nodeId]);
 
 	useEffect(() => {
 		if (!nodeId){
 			return ;
 		}
-
 		dashboardBuilderClient.nodeAttach(nodeId, onNodeChanged);
-
 		return () => {
 			dashboardBuilderClient.nodeDetach(nodeId, onNodeChanged);
 		}
