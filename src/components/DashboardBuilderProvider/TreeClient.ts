@@ -241,11 +241,11 @@ export class TreeClient<T extends TreeItem> {
 		return getChildCount([this.root], nodeId);
 	}
 
-	public flattenTree(): (T & FlattenedItem)[]{
+	public flattenTree(): (T & FlattenedItem)[] {
 		if (!this.root){
 			return [];
 		}
-		return flattenTree([this.root]);
+		return flattenTree<T & FlattenedItem, T>([this.root]);
 	}
 
 

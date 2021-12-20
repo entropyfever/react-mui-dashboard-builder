@@ -88,27 +88,22 @@ export function getProjection(
   return { depth, maxDepth, minDepth, parentId: getParentId() };
 }
 
-function flatten<T extends TreeItem>(
-  items: T[],
+function flatten<T extends FlattenedItem, S extends TreeItem>(
+  items: S[],
   parentId: string | null = null,
   depth = 0,
-): (T & FlattenedItem)[] {
+): T[] {
 
 
-  return items.reduce<(T & FlattenedItem)[]>((acc, item, index) => {
+  return items.reduce<T[]>((acc, item, index) => {
 
-    const flattenedItem = {...item, ...{parentId, index, depth}} as (T & FlattenedItem);
-
-    return [
-      ...acc,
-      flattenedItem,
-      ...flatten(item.children, item.id, depth + 1),
-    ];
+    const flattenedItem = {...item, ...{parentId, index, depth}} as unknown as T;
+    return acc.concat([flattenedItem], flatten(item.children, parentId, depth + 1));
 
   }, []);
 }
 
-export function flattenTree<T extends TreeItem>(items: T[]): (T & FlattenedItem)[]{
+export function flattenTree<T extends FlattenedItem, S extends TreeItem>(items: S[]): T[]{
   return flatten(items);
 }
 
@@ -235,7 +230,7 @@ export function getChildCount<T extends TreeItem>(items: T[], id: string): numbe
   return item ? countChildren(item.children) : 0;
 }
 
-export function removeChildrenOf(items: FlattenedItem[], ids: string[]): FlattenedItem[] {
+export function removeChildrenOf<T extends FlattenedItem>(items: T[], ids: string[]): T[] {
   const excludeParentIds = [ ...ids ];
 
   return items.filter((item) => {

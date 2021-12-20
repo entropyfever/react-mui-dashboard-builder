@@ -50,6 +50,7 @@ import {
 	useDashboardBuilderClient,
 	useTree
 } from "../DashboardBuilderProvider";
+import {DashboardItem} from "../TreeNode";
 
 const adjustTranslate: Modifier = ({transform}) => {
 	return {
@@ -96,7 +97,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 		      removable,
 	      } = props as PropsWithDefaults;
 
-	const client = useDashboardBuilderClient();
+	const client = useDashboardBuilderClient<DashboardItem>();
 
 	const [root, setRoot] = useTree();
 
@@ -112,13 +113,14 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 		const flattenedTree = client.flattenTree();
 		const collapsedItems = flattenedTree.reduce<string[]>(
 			(acc, {children, collapsed, id}) => {
-				return (collapsed && children.length ? [...acc,
-				                                        id] : acc);
+				return (collapsed && children.length ? [...acc, id] : acc);
 			},
 			[],
 		);
 
-		return removeChildrenOf(
+		// TODO: fix this shit
+		// also move removeChildrenOf inside treeClient
+		return removeChildrenOf<typeof flattenedTree[0]>(
 			flattenedTree,
 			activeId ? [activeId,
 			            ...collapsedItems] : collapsedItems,
