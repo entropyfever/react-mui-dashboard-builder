@@ -31,7 +31,7 @@ export interface ITreeNodeProps {
 	nodeId: string
 }
 
-export type TreeItemWithComponent = TreeItem & StylableTreeItem & {
+export type DashboardItem = TreeItem & StylableTreeItem & {
 	registeredComponent?: ReactFCRegistered
 }
 
@@ -41,7 +41,7 @@ const WidgetSelector = (
 ) => {
 	const client = useDashboardBuilderClient();
 
-	const [node, updateNodeProperty] = useNode<StylableTreeItem & TreeItemWithComponent>(props.nodeId);
+	const [node, updateNodeProperty] = useNode<DashboardItem>(props.nodeId);
 
 	if (!node) {
 		return null;
@@ -72,7 +72,7 @@ const WidgetSelector = (
 
 export const TreeNode: React.FunctionComponent<ITreeNodeProps> = (props) => {
 
-	const [node,] = useNode<TreeItemWithComponent>(props.nodeId);
+	const [node,] = useNode<DashboardItem>(props.nodeId);
 
 	const client = useDashboardBuilderClient();
 
