@@ -111,7 +111,8 @@ export const TreeNode: React.FunctionComponent<ITreeNodeProps> = (props) => {
 
 		const ForceRerenderComponent = () => <Component />;
 
-		return <Grid container item {...styleProps} xs={12}>
+		// TODO: add style property to styleProps (and replace hardcoded height with something more sophisticated)
+		return <Grid container item {...styleProps} xs={12} style={{height: '100%'}}>
 				<Item>
 					<ForceRerenderComponent/>
 				</Item>
