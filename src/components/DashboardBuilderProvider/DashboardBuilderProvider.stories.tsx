@@ -87,6 +87,7 @@ const CopyPaste = () => {
 	};
 
 	const pasteDashboard = async () => {
+
 		navigator.clipboard.readText().then((data) => {
 			client.importDashboardFromJSONFormat(JSON.parse(data));
 		});
