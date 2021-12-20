@@ -361,12 +361,12 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 				{
 					flattenedItems
 						.filter(({id}) => id !== 'root') // omit root from tree
-						.map(({id, children, collapsed, depth, isLeaf}) => {
+						.map(({id, children, collapsed, depth, isLeaf, registeredComponent}) => {
 							return (
 								<SortableTreeItem
 									key={id}
 									id={id}
-									value={id}
+									value={!isLeaf ? id : !registeredComponent ? id : registeredComponent.displayName }
 									depth={id === activeId && projected ? projected.depth - 1 : depth - 1} // minus 1 for depth because root is omitted
 									indentationWidth={indentationWidth}
 									indicator={indicator}

@@ -5,11 +5,15 @@ import {
 	DashboardBuilderClient,
 	DashboardBuilderProvider,
 	useNode,
+	useSelectedNode,
 } from "../DashboardBuilderProvider";
 import {SortableTree} from "../SortableTree";
 import {DashboardPreview} from "../DashboardPreview";
 import {v4 as uuid} from 'uuid';
-import {StyleEditor} from "../StyleEditor";
+import {
+	StylableTreeItem,
+	StyleEditor
+} from "../StyleEditor";
 
 const TreeNode = (props: {nodeId: string}) => {
 
@@ -18,15 +22,31 @@ const TreeNode = (props: {nodeId: string}) => {
 	return <p>{JSON.stringify(node)}</p>
 }
 
+const SelectedNode = () => {
+
+	const [node] = useSelectedNode();
+
+	return <p>{JSON.stringify(node)}</p>
+}
+
 const AddNodeToRoot = () => {
 
-	const [, , addChild] = useNode('root');
+	const [, , addChild] = useNode<StylableTreeItem>('root');
 
 	return <button type={'submit'} onClick={() => {
 		return addChild({
 			id: uuid(),
 			children: [],
-			isLeaf: false
+			isLeaf: false,
+			styleProps: {
+				xs: 12,
+				md: 12,
+				rowSpacing: 0,
+				columnSpacing: 0,
+				direction: 'row',
+				alignItems: 'flex-start',
+				justifyContent: 'flex-start',
+			}
 		})
 	}}>
 		Add Layout
@@ -74,10 +94,11 @@ storiesOf('DashboardBuilderProvider', module)
 			.setDefaultRegisteredComponent('chart')
 
 		return <DashboardBuilderProvider client={c} >
-			<StyleEditor />
 			<DashboardPreview />
 			<AddNodeToRoot />
 			<AddLeafToRoot />
+			<SelectedNode />
 			<SortableTree collapsible indicator removable />
+			<StyleEditor />
 		</DashboardBuilderProvider>
 	})

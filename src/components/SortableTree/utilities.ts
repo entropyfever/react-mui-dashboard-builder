@@ -1,6 +1,7 @@
 import { arrayMove } from '@dnd-kit/sortable';
 
 import type { FlattenedItem, TreeItem } from './types';
+import _ from "lodash";
 
 export const iOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
@@ -124,12 +125,13 @@ export function buildTree<T extends FlattenedItem>(flattenedItems: T[]): T {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
-    const { id, children, isLeaf } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = { id, children, isLeaf };
-    parent.children.push({ ...item, index: parent.children.length});
+    const clonedItem = _.cloneDeep(item);
+
+    nodes[item.id] = clonedItem; // TODO: make some investigation here
+    parent.children.push({ ...clonedItem, index: parent.children.length});
   }
 
   return root;

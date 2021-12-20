@@ -117,7 +117,11 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 							{collapseIcon}
 						</Action>
 					)}
-					<span className={'Text'} style={{fontWeight: isLeaf ? 'bold' : 'normal'}}>{value}</span>
+					<span
+						className={'Text'}
+						style={{fontWeight: isLeaf ? 'bold' : 'normal'}}>
+						{value}
+					</span>
 					{onSettings && <Action
 						onClick={(e) => {
 							e.stopPropagation();

@@ -23,7 +23,7 @@ import {TreeItem} from "../SortableTree/types";
 export interface StyleEditorProps {
 }
 
-interface StyleProps
+export interface StyleProps
 	extends DefaultComponentProps<GridTypeMap> {
 }
 
