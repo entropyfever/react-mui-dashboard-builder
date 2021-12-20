@@ -4,6 +4,7 @@ import { storiesOf } from '@storybook/react';
 import {
 	DashboardBuilderClient,
 	DashboardBuilderProvider,
+	useDashboardBuilderClient,
 	useNode,
 	useSelectedNode,
 } from "../DashboardBuilderProvider";
@@ -76,6 +77,31 @@ const Chart = () => {
 	return <p>Chart</p>
 }
 
+const CopyPaste = () => {
+
+	const client = useDashboardBuilderClient();
+
+	const clipboardDashboard = async () => {
+		const str = client.exportDashboardToJSONFormat();
+		await navigator.clipboard.writeText(str);
+	};
+
+	const pasteDashboard = async () => {
+		navigator.clipboard.readText().then((data) => {
+			client.importDashboardFromJSONFormat(JSON.parse(data));
+		});
+	};
+
+	return <div>
+		<button type={'submit'} onClick={() => clipboardDashboard()}>
+			Copy
+		</button>
+		<button type={'submit'} onClick={() => pasteDashboard()}>
+			Paste
+		</button>
+	</div>
+}
+
 storiesOf('DashboardBuilderProvider', module)
 	.add('useNode', () => {
 		const c = new DashboardBuilderClient({id: 'root', children: [], isLeaf: false});
@@ -95,6 +121,7 @@ storiesOf('DashboardBuilderProvider', module)
 
 		return <DashboardBuilderProvider client={c} >
 			<DashboardPreview />
+			<CopyPaste />
 			<AddNodeToRoot />
 			<AddLeafToRoot />
 			<SelectedNode />
