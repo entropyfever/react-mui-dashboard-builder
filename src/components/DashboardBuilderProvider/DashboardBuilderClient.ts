@@ -23,6 +23,7 @@ export class DashboardBuilderClient<T extends TreeItem> extends TreeClient<T> {
 		};
 	}
 
+
 	public registerComponent(c: ReactFCRegistered): DashboardBuilderClient<T> {
 		this._registeredComponents.push(c);
 		return this;
