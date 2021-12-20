@@ -1,7 +1,7 @@
 {
   "name": "react-mui-dashboard-builder",
   "license": "MIT",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "private": false,
   "description": "A dashboard builder built on top of react and mui's grid system",
   "author": "Christos Miamis (aka: entropyfever)",
