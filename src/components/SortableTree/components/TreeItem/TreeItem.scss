@@ -101,6 +101,10 @@
   color: #fff;
 }
 
+.selected {
+  background-color: #efefef;
+}
+
 .disableInteraction {
   pointer-events: none;
 }
@@ -120,6 +124,16 @@
   }
 
   &.collapsed svg {
+    transform: rotate(-90deg);
+  }
+}
+
+.Settings {
+  svg {
+    transition: transform 250ms ease;
+  }
+
+  &.settings svg {
     transform: rotate(-90deg);
   }
 }

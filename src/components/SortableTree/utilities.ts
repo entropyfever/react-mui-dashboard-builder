@@ -8,6 +8,7 @@ function getDragDepth(offset: number, indentationWidth: number): number {
   return Math.round(offset / indentationWidth);
 }
 
+
 interface IItemDepth {
   (item: FlattenedItem): number
 }
@@ -15,6 +16,9 @@ interface IItemDepth {
 
 const getMaxDepth: IItemDepth = function (previousItem) {
   if (previousItem) {
+    if (previousItem.isLeaf){
+      return previousItem.depth;
+    }
     return previousItem.depth + 1;
   }
 
@@ -112,7 +116,7 @@ export function findItem(items: TreeItem[], itemId: string): TreeItem | undefine
 }
 
 export function buildTree<T extends FlattenedItem>(flattenedItems: T[]): T {
-  const root: T = { id: 'root', children: [] };
+  const root: T = {id: 'root', children: [], isLeaf: false} as unknown as T;
   const nodes: Record<string, TreeItem> = { [root.id]: root };
   const items = flattenedItems
     .filter((item) => item.id !== 'root')
@@ -120,11 +124,11 @@ export function buildTree<T extends FlattenedItem>(flattenedItems: T[]): T {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
-    const { id, children } = item;
+    const { id, children, isLeaf } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = { id, children };
+    nodes[id] = { id, children, isLeaf };
     parent.children.push({ ...item, index: parent.children.length});
   }
 
@@ -191,7 +195,7 @@ export function setProperty<T extends TreeItem, K extends keyof T>(
       continue;
     }
 
-    if (item.children.length) {
+    if (!item.isLeaf) {
       item.children = setProperty(item.children, id, property, setter);
     }
   }
@@ -200,12 +204,12 @@ export function setProperty<T extends TreeItem, K extends keyof T>(
 }
 
 
-interface TestTreeItem extends TreeItem {
+type TestTreeItem = TreeItem & {
   test: string
 }
 
 const x: TestTreeItem[] = []
-setProperty(x, 'id', 'test', (x) => x)
+setProperty(x, 'id', 'children', (x) => x)
 
 
 

@@ -6,9 +6,10 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import _, { once } from 'lodash';
+import _, {once} from 'lodash';
 import {DashboardBuilderClient} from "./DashboardBuilderClient";
 import {TreeItem} from "../SortableTree/types";
+import {SpecialNode} from "./TreeClient";
 
 
 interface IDashboardBuilderContext<T extends TreeItem> {
@@ -16,7 +17,7 @@ interface IDashboardBuilderContext<T extends TreeItem> {
 }
 
 const createDashboardBuilderContext = once(<T extends TreeItem,>() => {
-	const dashboardBuilderClient = new DashboardBuilderClient<T>();
+	const dashboardBuilderClient = new DashboardBuilderClient<T>({id: 'root', children: []} as unknown as T);
 	return createContext<IDashboardBuilderContext<T>>({ dashboardBuilderClient })
 });
 
@@ -74,7 +75,9 @@ interface IPropertySetter<T> {
 	<K extends keyof T>(property: K, setter: (value: T[K]) => T[K]): void
 }
 
-export const useNode = function <T extends TreeItem>(nodeId: string | undefined): [T | undefined, <K extends keyof T>(property: K, setter: (value: T[K]) => T[K]) => void] {
+type NodeHookReturnType<T> = [T | undefined, <K extends keyof T>(property: K, setter: (value: T[K]) => T[K]) => void, (child: T) => void]
+
+export const useNode = function <T extends TreeItem>(nodeId: string | undefined): NodeHookReturnType<T> {
 
 	const dashboardBuilderClient = useDashboardBuilderClient<T>();
 
@@ -112,9 +115,44 @@ export const useNode = function <T extends TreeItem>(nodeId: string | undefined)
 
 	}, [nodeId, dashboardBuilderClient] );
 
-	return [node, updateNodeProperty];
+	const addChildToNode = useCallback<(child: T) => void>(
+		( child) => {
+			if (!nodeId){
+				return;
+			}
+			dashboardBuilderClient.addChildToNode(nodeId, child);
+
+		}, [nodeId, dashboardBuilderClient] );
+
+	return [node, updateNodeProperty, addChildToNode];
 }
 
+export const useSpecialNode = function <T extends TreeItem>(special: SpecialNode):  NodeHookReturnType<T>  {
+	const dashboardBuilderClient = useDashboardBuilderClient<T>();
+
+	const [specialNodeId, setSpecialNodeId] = useState(dashboardBuilderClient.getSpecialNode(special));
 
 
+	const onSelectedNodeChanged = (id: string | undefined): void => {
+		setSpecialNodeId(id)
+	}
 
+	useEffect(() => {
+		dashboardBuilderClient.specialNodeAttach(special, onSelectedNodeChanged);
+
+		return () => {
+			dashboardBuilderClient.specialNodeDetach(special, onSelectedNodeChanged);
+		}
+	})
+	return useNode<T>(specialNodeId);
+}
+
+export const useSelectedNode = function <T extends TreeItem>(): NodeHookReturnType<T>  {
+
+	return useSpecialNode<T>('selected')
+}
+
+export const useSettingsNode = function <T extends TreeItem> (): NodeHookReturnType<T>  {
+
+	return useSpecialNode<T>('settings')
+}

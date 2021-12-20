@@ -250,6 +250,14 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 		client.removeNode(id);
 	}
 
+	function handleSelect(id: string): void {
+		client.toggleSelectedNode(id);
+	}
+
+	function handleSettings(id: string): void {
+		client.setSettingsNode(id);
+	}
+
 	function handleCollapse(id: string): void {
 		client.setNodeProperty(id, "collapsed", (value) => {
 			return !value;
@@ -353,7 +361,7 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 				{
 					flattenedItems
 						.filter(({id}) => id !== 'root') // omit root from tree
-						.map(({id, children, collapsed, depth}) => {
+						.map(({id, children, collapsed, depth, isLeaf}) => {
 							return (
 								<SortableTreeItem
 									key={id}
@@ -363,6 +371,10 @@ export const SortableTree: React.FunctionComponent<Props> = function (props) {
 									indentationWidth={indentationWidth}
 									indicator={indicator}
 									collapsed={Boolean(collapsed && children.length)}
+									isLeaf={isLeaf}
+									selected={Boolean(client.selectedNodeId === id)}
+									onSelect={() => handleSelect(id)}
+									onSettings={() => handleSettings(id)}
 									onCollapse={
 										collapsible && children.length
 											? () => {
