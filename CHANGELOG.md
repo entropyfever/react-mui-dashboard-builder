@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.1](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.3.0...v1.3.1) (2021-12-20)
+
+
+### Bug Fixes
+
+* fucking stupid bug because i am too smart ([c4df893](https://github.com/entropyfever/react-mui-dashboard-builder/commit/c4df8934e83069cc6b79b238c01da36f17ed15ad))
+
 ## [1.3.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.2.0...v1.3.0) (2021-12-20)
 
 
