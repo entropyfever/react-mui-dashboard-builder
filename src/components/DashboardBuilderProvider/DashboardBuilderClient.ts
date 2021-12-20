@@ -53,4 +53,5 @@ export class DashboardBuilderClient<T extends TreeItem> extends TreeClient<T> {
 	public importDashboardFromJSONFormat(json: any): void {
 		this.root = JSON.parse(JSON.stringify(json));
 	}
+
 }
