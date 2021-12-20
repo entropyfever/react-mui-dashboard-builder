@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.5.0...v1.6.0) (2021-12-20)
+
+
+### Features
+
+* add import export dashboard ([0912f66](https://github.com/entropyfever/react-mui-dashboard-builder/commit/0912f6606fdb28cc9eb98b72c2700896937c061b))
+
 ## [1.5.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.4.7...v1.5.0) (2021-12-20)
 
 
