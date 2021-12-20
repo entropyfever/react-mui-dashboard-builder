@@ -108,9 +108,12 @@ export const TreeNode: React.FunctionComponent<ITreeNodeProps> = (props) => {
 			throw new Error('Invalid state');
 		}
 		const {component: Component} = foundComponent;
+
+		const ForceRerenderComponent = () => <Component />;
+
 		return <Grid container item {...styleProps} xs={12}>
 				<Item>
-					<Component/>
+					<ForceRerenderComponent/>
 				</Item>
 		</Grid>;
 	}

@@ -69,7 +69,7 @@ const AddLeafToRoot = () => {
 }
 
 const Map = () => {
-	return <p>Map</p>
+	return <div style={{height: '100%', width: '100%', backgroundColor: 'red'}}>Map</div>
 }
 
 const Chart = () => {
