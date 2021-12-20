@@ -3,21 +3,21 @@ import './styleEditor.scss';
 import {useSelectedNode} from "../DashboardBuilderProvider";
 import {
   Box,
-  GridProps,
-  ResponsiveStyleValue
 } from "@mui/system";
 import {
-  Grid,
-  GridDirection,
-  MenuItem,
-  Select,
-  Slider
+	Grid,
+	GridDirection,
+	MenuItem,
+	Select,
+	Slider
 } from "@mui/material";
 import {
 	DefaultComponentProps,
-	OverridableComponent
 } from "@mui/material/OverridableComponent";
-import {GridTypeMap} from "@mui/material/Grid/Grid";
+import {
+	GridSize,
+	GridTypeMap
+} from "@mui/material/Grid/Grid";
 import {TreeItem} from "../SortableTree/types";
 
 export interface StyleEditorProps {
@@ -122,7 +122,10 @@ export const StyleEditor: React.FC<StyleEditorProps> = ({children}) => {
 					max={12}
 					min={1}
 					onChange={(e, v) => {
-						return handleStyleChange('xs', v);
+						if(!(typeof v === "number")){
+							throw new Error('TODO: fix this')
+						}
+						return handleStyleChange('xs', v as GridSize);
 					}}
 				/>
 			</div>
@@ -136,7 +139,7 @@ export const StyleEditor: React.FC<StyleEditorProps> = ({children}) => {
 					max={12}
 					min={1}
 					onChange={(e, v) => {
-						return handleStyleChange('md', v);
+						return handleStyleChange('md', v as GridSize);
 					}}
 				/>
 			</div>
@@ -174,7 +177,7 @@ export const StyleEditor: React.FC<StyleEditorProps> = ({children}) => {
 					value={direction}
 					label='Direction'
 					onChange={(e) => {
-						return handleStyleChange('direction', e.target.value);
+						return handleStyleChange('direction', e.target.value as GridDirection);
 					}}
 				>
 					{
