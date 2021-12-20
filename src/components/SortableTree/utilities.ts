@@ -90,7 +90,7 @@ export function getProjection(
 
 function flatten<T extends FlattenedItem, S extends TreeItem>(
   items: S[],
-  parentId: string | null = null,
+  parentId = 'root',
   depth = 0,
 ): T[] {
 
@@ -98,13 +98,15 @@ function flatten<T extends FlattenedItem, S extends TreeItem>(
   return items.reduce<T[]>((acc, item, index) => {
 
     const flattenedItem = {...item, ...{parentId, index, depth}} as unknown as T;
-    return acc.concat([flattenedItem], flatten(item.children, parentId, depth + 1));
+    return acc.concat([flattenedItem], flatten(item.children, item.id, depth + 1));
 
   }, []);
 }
 
 export function flattenTree<T extends FlattenedItem, S extends TreeItem>(items: S[]): T[]{
-  return flatten(items);
+  const res = flatten<T, S>(items);
+  console.log(res, res.length)
+  return res;
 }
 
 export function findItem(items: TreeItem[], itemId: string): TreeItem | undefined {
@@ -120,13 +122,12 @@ export function buildTree<T extends FlattenedItem>(flattenedItems: T[]): T {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const item of items) {
+    const { id, children, isLeaf, ...rest } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    const clonedItem = _.cloneDeep(item);
-
-    nodes[item.id] = clonedItem; // TODO: make some investigation here
-    parent.children.push({ ...clonedItem, index: parent.children.length});
+    nodes[id] = { id, children, isLeaf, ...rest }; // TODO: make some investigation here
+    parent.children.push({ ...item, index: parent.children.length});
   }
 
   return root;
