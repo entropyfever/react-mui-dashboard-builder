@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.2.0...v1.3.0) (2021-12-20)
+
+
+### Features
+
+* add soe typings ([dbaf602](https://github.com/entropyfever/react-mui-dashboard-builder/commit/dbaf602cca60c95a3ab669706619d5b582e2aa6d))
+* add some nice stuff, at least nice to me ([61dd338](https://github.com/entropyfever/react-mui-dashboard-builder/commit/61dd338fa7eaf79310d28351f0f5ecfc08c5b3b1))
+* additions ([5d58750](https://github.com/entropyfever/react-mui-dashboard-builder/commit/5d587505ad7e60c5f72be3bca10e9f83a447a273))
+* rename ([599ea5b](https://github.com/entropyfever/react-mui-dashboard-builder/commit/599ea5b26b535688ca9ccde472b11177df452177))
+* to be continued ([e132668](https://github.com/entropyfever/react-mui-dashboard-builder/commit/e132668e93fc6f4143e3a9af5380bd93cf032839))
+* transform tree utilities into tree client ([84aadf8](https://github.com/entropyfever/react-mui-dashboard-builder/commit/84aadf83105e1fa410eefae5485cc71eb6208527))
+
+
+### Bug Fixes
+
+* add some more typings ([4e6d4d4](https://github.com/entropyfever/react-mui-dashboard-builder/commit/4e6d4d417d73f90926ec9b92f8aaa2680b1e6683))
+* some index bugs ([8863e5e](https://github.com/entropyfever/react-mui-dashboard-builder/commit/8863e5e4b330d7a37d429f6fd341e3456a7b0c2c))
+
 ## [1.2.0](https://github.com/entropyfever/react-mui-dashboard-builder/compare/v1.1.1...v1.2.0) (2021-12-16)
 
 
